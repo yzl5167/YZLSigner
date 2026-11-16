@@ -27,8 +27,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.yzl.signer
-        MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "1"
+        MARKETING_VERSION: "0.2.0"
+        CURRENT_PROJECT_VERSION: "2"
         CODE_SIGN_IDENTITY: ""
         CODE_SIGNING_REQUIRED: "NO"
         CODE_SIGNING_ALLOWED: "NO"
@@ -43,7 +43,7 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: YZL签名器
-        CFBundleShortVersionString: "0.1.0"
+        CFBundleShortVersionString: "0.2.0"
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
         UILaunchScreen: {}
@@ -52,3 +52,7 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         UIRequiredDeviceCapabilities:
           - arm64
+        CFBundleURLTypes:
+          - CFBundleURLName: com.yzl.signer
+            CFBundleURLSchemes:
+              - yzlsigner

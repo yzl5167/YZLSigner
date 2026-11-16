@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<dict>
+		<key>DeviceAttributes</key>
+		<array>
+			<string>UDID</string>
+			<string>DEVICE_NAME</string>
+			<string>PRODUCT</string>
+			<string>VERSION</string>
+			<string>SERIAL</string>
+		</array>
+		<key>URL</key>
+		<string>https://yzl5167.github.io/YZLSigner/return.html</string>
+	</dict>
+	<key>PayloadOrganization</key>
+	<string>YZL</string>
+	<key>PayloadDisplayName</key>
+	<string>读取本机 UDID</string>
+	<key>PayloadDescription</key>
+	<string>只读取本机 UDID 用于应用签名，不修改任何系统设置，安装后可随时删除。</string>
+	<key>PayloadIdentifier</key>
+	<string>com.yzl.signer.udid</string>
+	<key>PayloadType</key>
+	<string>Profile Service</string>
+	<key>PayloadUUID</key>
+	<string>5B4A1E2C-9C7D-4E31-8B6F-1A2D3C4B5E60</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

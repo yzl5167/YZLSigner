@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>读取 UDID</title>
+<style>
+  :root { color-scheme: dark light; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px; padding: 28px; box-sizing: border-box;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    background: #0d1117; color: #e6edf3; text-align: center;
+  }
+  h1 { font-size: 20px; margin: 0; font-weight: 600; }
+  #udid {
+    font: 15px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    word-break: break-all; padding: 14px 16px; border-radius: 12px;
+    background: #161b22; border: 1px solid #30363d;
+    max-width: 100%;
+  }
+  #msg { color: #8b949e; font-size: 14px; max-width: 420px; }
+  a.btn {
+    display: inline-block; padding: 13px 26px; border-radius: 12px;
+    background: #2f81f7; color: #fff; text-decoration: none;
+    font-weight: 600; font-size: 16px;
+  }
+  a.btn:active { opacity: .7; }
+</style>
+</head>
+<body>
+<h1 id="title">正在读取…</h1>
+<div id="udid" hidden></div>
+<p id="msg">正在从系统描述文件里取回本机 UDID。</p>
+<a class="btn" id="open" href="#" hidden>打开 YZL 签名器</a>
+
+<script>
+(function () {
+  var title = document.getElementById('title');
+  var box = document.getElementById('udid');
+  var msg = document.getElementById('msg');
+  var open = document.getElementById('open');
+
+  function firstUDID(text) {
+    var m = text.match(/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{16}/);
+    if (m) return m[0].toUpperCase();
+    m = text.match(/\b[0-9A-Fa-f]{40}\b/);
+    if (m) return m[0].toUpperCase();
+    return null;
+  }
+
+  var found = firstUDID(location.href);
+
+  if (!found) {
+    title.textContent = '没有读到 UDID';
+    msg.textContent =
+      '请从 YZL 签名器里点「用系统描述文件获取」重新走一遍，' +
+      '安装描述文件后系统会自动跳回这里。';
+    return;
+  }
+
+  title.textContent = '已读取到本机 UDID';
+  box.textContent = found;
+  box.hidden = false;
+  msg.textContent = '正在唤起签名器… 如果没有自动跳转，点下面的按钮。';
+
+  open.href = 'yzlsigner://udid?u=' + encodeURIComponent(found);
+  open.hidden = false;
+
+  // 双保险：replace 之后页面就没了，不阻塞按钮
+  setTimeout(function () {
+    location.replace('yzlsigner://udid?u=' + encodeURIComponent(found));
+  }, 60);
+})();
+</script>
+</body>
+</html>

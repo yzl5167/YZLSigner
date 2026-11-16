@@ -69,32 +69,3 @@ enum AnisetteClient {
         throw SignError.message(lastError)
     }
 }
-
-/// 从配对文件里读出本机 UDID。
-/// 配对文件是 plist，其中 UDID 字段就是设备的唯一标识。
-enum UDIDReader {
-    static func read(from url: URL) throws -> String {
-        let accessed = url.startAccessingSecurityScopedResource()
-        defer { if accessed { url.stopAccessingSecurityScopedResource() } }
-
-        let data = try Data(contentsOf: url)
-        guard let obj = try? PropertyListSerialization.propertyList(from: data, format: nil) else {
-            throw SignError.message("不是有效的 plist 文件")
-        }
-        guard let dict = obj as? [String: Any] else {
-            throw SignError.message("配对文件格式异常")
-        }
-
-        for key in ["UDID", "UniqueDeviceID", "udid"] {
-            if let v = dict[key] as? String, !v.isEmpty {
-                return v
-            }
-        }
-
-        // StosVPN 那类隧道配置文件没有 UDID，提示用户换一份
-        if dict["alt_irk"] != nil || dict["public_key"] != nil {
-            throw SignError.message("这是 VPN 隧道配置，不是配对文件。请导入 StikDebug 导出的配对文件。")
-        }
-        throw SignError.message("文件里没有 UDID 字段")
-    }
-}
