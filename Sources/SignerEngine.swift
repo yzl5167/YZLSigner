@@ -99,15 +99,10 @@ final class SignerEngine: ObservableObject {
             password: password,
             anisetteData: anisette,
             xcodeVersion: "16.0",
-            verificationHandler: { request in
-                switch request {
-                case .cancel:
-                    return .cancel
-                default:
-                    let code = await broker.requestCode()
-                    let trimmed = code.trimmingCharacters(in: .whitespacesAndNewlines)
-                    return trimmed.isEmpty ? .cancel : .verificationCode(trimmed)
-                }
+            verificationHandler: { _ in
+                let code = await broker.requestCode()
+                let trimmed = code.trimmingCharacters(in: .whitespacesAndNewlines)
+                return trimmed.isEmpty ? .cancel : .verificationCode(trimmed)
             }
         )
         append("   登录成功")
@@ -142,7 +137,8 @@ final class SignerEngine: ObservableObject {
         append("⑤ 注册本机 UDID…")
         let device = try await portal.registerDevice(
             name: "iPhone",
-            deviceNumber: udid,
+            identifier: udid,
+            type: .iPhone,
             team: team,
             session: auth.session
         )
