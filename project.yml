@@ -1,0 +1,54 @@
+name: YZLSigner
+options:
+  bundleIdPrefix: com.yzl
+  deploymentTarget:
+    iOS: "15.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+packages:
+  SideSign:
+    url: https://github.com/SideStore/SideSign.git
+    branch: main
+  ZIPFoundation:
+    url: https://github.com/weichsel/ZIPFoundation.git
+    from: "0.9.19"
+
+targets:
+  YZLSigner:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    dependencies:
+      - package: SideSign
+        product: SideSign
+      - package: ZIPFoundation
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.yzl.signer
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: "NO"
+        CODE_SIGNING_ALLOWED: "NO"
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: "NO"
+        ENABLE_BITCODE: "NO"
+        IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+        SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+        DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: YZL签名器
+        CFBundleShortVersionString: "0.1.0"
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        ITSAppUsesNonExemptEncryption: false
+        UIRequiredDeviceCapabilities:
+          - arm64
