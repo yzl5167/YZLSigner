@@ -1,0 +1,25 @@
+{
+  "name": "YZL",
+  "identifier": "com.yzl.engine.feed",
+  "apps": [
+    {
+      "name": "YZL",
+      "bundleIdentifier": "com.stossy11.MeloNX",
+      "developerName": "YZL",
+      "subtitle": "YZL engine",
+      "localizedDescription": "YZL engine build delivered through the AltLoad install path.",
+      "tintColor": "8A28F7",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "buildVersion": "1",
+          "date": "2026-11-16",
+          "downloadURL": "https://gh-proxy.com/https://github.com/yzl5167/YZLSigner/releases/download/yzl-engine-v1/YZL-engine.ipa",
+          "size": 110635934,
+          "minOSVersion": "15.0",
+          "localizedDescription": "YZL engine 1.0.0"
+        }
+      ]
+    }
+  ]
+}
