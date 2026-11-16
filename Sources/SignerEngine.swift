@@ -6,6 +6,11 @@ enum SignerDefaults {
     static let p12Password = "yzl123"
 }
 
+/// `Result` 的失败类型必须遵循 Error，又不想把 any Error 带过并发边界。
+struct SignFailure: Error, Sendable {
+    let message: String
+}
+
 /// 在 2FA 处理闭包（@Sendable）与主线程 UI 之间传递验证码。
 final class CodeBroker: @unchecked Sendable {
     private var continuation: CheckedContinuation<String, Never>?
@@ -123,14 +128,14 @@ final class SignerEngine: ObservableObject {
         work = worker
 
         // 关键：脱离主线程，否则 291MB 的签名会把界面冻死
-        let task = Task.detached(priority: .userInitiated) { () -> Result<SignResult, String> in
+        let task = Task.detached(priority: .userInitiated) { () -> Result<SignResult, SignFailure> in
             do {
                 let result = try await worker.run(ipaURL: ipaURL, udid: udid,
                                                  appleID: appleID, password: password,
                                                  broker: brokerRef)
                 return .success(result)
             } catch {
-                return .failure(error.localizedDescription)
+                return .failure(SignFailure(message: error.localizedDescription))
             }
         }
 
@@ -147,9 +152,9 @@ final class SignerEngine: ObservableObject {
             p12Path = result.p12?.path
             profilePath = result.profile?.path
             refreshIdentitySummary()
-        case .failure(let message):
+        case .failure(let failure):
             append("")
-            append("❌ 失败：\(friendly(message))")
+            append("❌ 失败：\(friendly(failure.message))")
         }
     }
 

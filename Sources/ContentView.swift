@@ -44,7 +44,7 @@ struct ContentView: View {
 
                     Link(destination: UDIDProfile.profileURL) {
                         HStack {
-                            Text("读不到？用系统描述文件获取")
+                            Text("读不到？去 Safari 获取 UDID")
                             Spacer()
                             Image(systemName: "safari")
                         }
@@ -167,7 +167,7 @@ struct ContentView: View {
 
                 if let p12 = engine.p12Path, let prof = engine.profilePath {
                     Section(header: Text("你自己的证书"),
-                            footer: Text("p12 密码：\(SignerDefaults.p12Password)。把这套证书导进全能签，再用全能签签启动器，签出来的包就带 get-task-allow。")) {
+                            footer: Text("这是本机最重要的一步。把这个 p12 和描述文件导入全能签 / 轻松签，再用它们签启动器——签出来的包才带 get-task-allow，StikDebug 才会把启动器列进 JIT 名单。p12 密码：\(SignerDefaults.p12Password)。")) {
                         Button {
                             shareURL = URL(fileURLWithPath: p12)
                             showShare = true
@@ -184,12 +184,13 @@ struct ContentView: View {
                 }
 
                 Section(header: Text("怎么用")) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("1. 本机 UDID 会自动读出来，读不到就点上面的描述文件。")
-                        Text("2. 填 Apple ID 和密码，点开始签名。")
-                        Text("3. 弹出验证码时输一次，等它跑完。")
-                        Text("4. 用分享按钮把签好的 ipa 导出，直接安装即可。")
-                        Text("5. 装好后如果点图标没反应，去设置 → 隐私与安全性 → 开发者模式 打开。")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("1. 确认 UDID 已读出（读不到用 Safari 那一项）。")
+                        Text("2. 填 Apple ID 和密码，点开始签名，输一次验证码。")
+                        Text("3. 跑完会得到两样东西：yzl-signing.p12 和 yzl-signing.mobileprovision。")
+                        Text("4. 把这两样导进全能签 / 轻松签，用它签启动器再安装。")
+                        Text("5. 这样签出来的启动器带 get-task-allow，StikDebug 里就能看到并开 JIT。")
+                        Text("6. 装好后点图标没反应，去设置 → 隐私与安全性 → 开发者模式 打开。")
                     }
                     .font(.caption)
                     .foregroundColor(.secondary)
