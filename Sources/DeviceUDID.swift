@@ -160,8 +160,13 @@ enum DeviceUDID {
     }
 }
 
-/// 描述文件回跳地址。部署在 GitHub Pages 上。
+/// 外部 UDID 获取入口。
+///
+/// 说明：自己架 `Profile Service` 描述文件这条路在纯静态托管上走不通——
+/// 系统把设备属性 **POST** 给回跳地址，GitHub Pages 对 POST 直接回 405，
+/// 用户装完描述文件只会看到一页错误。所以这里改用有服务端处理的现成工具，
+/// 用户拿到后回来粘贴即可。
 enum UDIDProfile {
-    static let profileURL = URL(string: "https://yzl5167.github.io/YZLSigner/udid.mobileconfig")!
+    static let profileURL = URL(string: "https://www.pgyer.com/tools/udid")!
     static let callbackScheme = "yzlsigner"
 }
