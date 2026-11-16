@@ -143,18 +143,28 @@ final class SignWork: @unchecked Sendable {
         log("   \(appID.bundleIdentifier)")
         try checkCancel()
 
-        // ⑧ 描述文件
+        // ⑧ 描述文件（本地有可用的就不去麻烦服务器）
         stage("生成描述文件")
-        log("⑧ 生成开发描述文件…")
-        let profile = try await portal.createProvisioningProfile(
-            name: "YZL Dev \(Self.stamp())",
-            appID: appID,
-            certificateIDs: [keyStore.certificate.serialNumberHex],
-            deviceIDs: [device.identifier],
-            team: team,
-            session: auth.session
-        )
-        log("   有效期至 \(Self.dateString(profile.expirationDate))")
+        let profile: ProvisioningProfile
+        if let cached = IdentityStore.shared.loadProfile(
+            bundleID: bundleID,
+            udid: device.identifier,
+            certSerial: keyStore.certificate.serialNumberHex) {
+            profile = cached
+            log("⑧ 复用本机描述文件（\(Self.dateString(cached.expirationDate)) 到期），不新建")
+        } else {
+            log("⑧ 生成开发描述文件…")
+            profile = try await portal.createProvisioningProfile(
+                name: "YZL Dev \(Self.stamp())",
+                appID: appID,
+                certificateIDs: [keyStore.certificate.serialNumberHex],
+                deviceIDs: [device.identifier],
+                team: team,
+                session: auth.session
+            )
+            IdentityStore.shared.saveProfile(profile)
+            log("   有效期至 \(Self.dateString(profile.expirationDate))")
+        }
         try checkCancel()
 
         // ⑨ 签名（长活，带心跳）

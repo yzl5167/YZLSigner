@@ -35,6 +35,7 @@ final class IdentityStore: @unchecked Sendable {
 
     var p12URL: URL { directory.appendingPathComponent("identity.p12") }
     private var metaURL: URL { directory.appendingPathComponent("identity.json") }
+    private var profileURL: URL { directory.appendingPathComponent("cached.mobileprovision") }
 
     // MARK: - 读
 
@@ -97,6 +98,36 @@ final class IdentityStore: @unchecked Sendable {
         defer { lock.unlock() }
         try? FileManager.default.removeItem(at: p12URL)
         try? FileManager.default.removeItem(at: metaURL)
+        try? FileManager.default.removeItem(at: profileURL)
+    }
+
+    // MARK: - 描述文件复用
+
+    /// 上次生成的描述文件只要还满足「没过期 / bundle id 一致 / 含这台设备 / 含这张证书」，
+    /// 就直接拿来用。既省一次网络往返，也避免往账号里堆一串废弃 profile。
+    func loadProfile(bundleID: String, udid: String, certSerial: String) -> ProvisioningProfile? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard let data = try? Data(contentsOf: profileURL),
+              let profile = try? ProvisioningProfile(data: data) else {
+            return nil
+        }
+        guard profile.expirationDate.timeIntervalSinceNow > 86400 else { return nil }
+        guard profile.bundleIdentifier.caseInsensitiveCompare(bundleID) == .orderedSame else { return nil }
+        guard profile.deviceIDs.contains(where: { $0.caseInsensitiveCompare(udid) == .orderedSame }) else { return nil }
+        guard profile.certificates.contains(where: {
+            $0.serialNumberHex.caseInsensitiveCompare(certSerial) == .orderedSame
+        }) else { return nil }
+
+        return profile
+    }
+
+    func saveProfile(_ profile: ProvisioningProfile) {
+        lock.lock()
+        defer { lock.unlock() }
+        try? profile.data.write(to: profileURL,
+                                 options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
 
     /// 服务器上这张证书还在不在。被别的设备/工具撤销过就不能再用来签名。
