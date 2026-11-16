@@ -150,7 +150,8 @@ struct ContentView: View {
                 }
 
                 if let path = engine.outputPath {
-                    Section(header: Text("已签名")) {
+                    Section(header: Text("已签名"),
+                            footer: Text("这个 ipa 已经签好，但 iOS 不允许 App 自己安装 ipa。用能安装的工具（全能签 / 轻松签 / SideStore）打开它即可——证书本来就是你自己的，重新签一次也没关系。")) {
                         Text((path as NSString).lastPathComponent)
                             .font(.system(.callout, design: .monospaced))
                         Button {
