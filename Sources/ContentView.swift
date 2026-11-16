@@ -77,7 +77,8 @@ struct ContentView: View {
                 }
 
                 if engine.needsCode {
-                    Section(header: Text("双重认证")) {
+                    Section(header: Text("双重认证"),
+                            footer: Text("验证码 2 分钟内有效。收不到就点下面的取消重来一次。")) {
                         TextField("手机上收到的 6 位验证码", text: $code)
                             .keyboardType(.numberPad)
                         Button("提交验证码") {
@@ -106,6 +107,34 @@ struct ContentView: View {
                         }
                     }
                     .disabled(engine.busy || !canStart)
+
+                    if engine.busy {
+                        if let f = engine.fraction {
+                            VStack(alignment: .leading, spacing: 6) {
+                                ProgressView(value: f)
+                                Text("\(Int(f * 100))%")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        Button(role: .destructive) {
+                            engine.cancel()
+                        } label: {
+                            Text("取消").frame(maxWidth: .infinity)
+                        }
+                    }
+                }
+
+                Section(header: Text("本机证书"),
+                        footer: Text("证书会缓存在本机，重签同一个包不会再申请新证书，也不会占掉免费账号的两个名额。")) {
+                    Text(engine.identitySummary)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Button(role: .destructive) {
+                        engine.forgetIdentity()
+                    } label: {
+                        Text("忘记本机证书")
+                    }
                 }
 
                 if !engine.logs.isEmpty {
@@ -116,7 +145,7 @@ struct ContentView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .textSelection(.enabled)
                         }
-                        .frame(height: 240)
+                        .frame(height: 260)
                     }
                 }
 
@@ -160,6 +189,7 @@ struct ContentView: View {
                         Text("2. 填 Apple ID 和密码，点开始签名。")
                         Text("3. 弹出验证码时输一次，等它跑完。")
                         Text("4. 用分享按钮把签好的 ipa 导出，直接安装即可。")
+                        Text("5. 装好后如果点图标没反应，去设置 → 隐私与安全性 → 开发者模式 打开。")
                     }
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -167,6 +197,7 @@ struct ContentView: View {
             }
             .navigationTitle("YZL 签名器")
             .onAppear {
+                engine.refreshIdentitySummary()
                 if DeviceUDID.normalize(udid) == nil { autoDetect() }
             }
             .onOpenURL { url in
