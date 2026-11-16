@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YZL 签名器 · 用自己的 Apple ID 生成 iOS 开发证书</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #14171f;
+    --muted: #5d6577;
+    --line: #e6e9ef;
+    --accent: #1f6feb;
+    --accent-dark: #1858bb;
+    --ok: #12805c;
+    --warn: #9a5b00;
+    --warn-bg: #fff6e5;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  header { padding: 12px 0 26px; }
+  .badge {
+    display: inline-block; font-size: 12px; letter-spacing: .04em;
+    color: var(--accent); background: #e8f0fe; border-radius: 999px;
+    padding: 4px 11px; margin-bottom: 14px;
+  }
+  h1 { font-size: 27px; line-height: 1.3; margin: 0 0 10px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); margin: 0; font-size: 15.5px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 20px; margin: 0 0 16px;
+  }
+  h2 { font-size: 15px; margin: 0 0 14px; letter-spacing: .01em; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-weight: 600; font-size: 16px; border-radius: 11px;
+    padding: 15px 20px; margin-bottom: 10px;
+  }
+  .btn:active { background: var(--accent-dark); }
+  .btn.ghost {
+    background: transparent; color: var(--accent);
+    border: 1px solid #c9dbfb; font-weight: 500; font-size: 15px;
+  }
+  .sub { font-size: 13px; color: var(--muted); text-align: center; margin: 0; }
+
+  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  ol.steps li {
+    position: relative; padding-left: 36px; margin-bottom: 16px;
+    counter-increment: s; font-size: 15px;
+  }
+  ol.steps li:last-child { margin-bottom: 0; }
+  ol.steps li::before {
+    content: counter(s);
+    position: absolute; left: 0; top: 1px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #e8f0fe; color: var(--accent);
+    font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+  ol.steps b { font-weight: 600; }
+  .hint { display: block; color: var(--muted); font-size: 13.5px; margin-top: 3px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; width: 44%; }
+  tr:last-child th, tr:last-child td { border-bottom: none; }
+  td.yes { color: var(--ok); }
+  td.no { color: #b4232a; }
+
+  .note {
+    background: var(--warn-bg); border: 1px solid #f2ddb4;
+    border-radius: 11px; padding: 14px 16px; font-size: 14px; color: var(--warn);
+    margin: 0 0 16px;
+  }
+  .note b { color: #7a4700; }
+
+  details {
+    border-bottom: 1px solid var(--line); padding: 12px 0;
+  }
+  details:last-child { border-bottom: none; }
+  summary { cursor: pointer; font-size: 15px; font-weight: 500; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; float: right; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "−"; }
+  details p { margin: 9px 0 0; font-size: 14px; color: var(--muted); }
+
+  footer { text-align: center; font-size: 12.5px; color: #8b93a3; padding-top: 12px; }
+  footer a { color: #8b93a3; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="badge">iOS 15 及以上 · 免费 Apple ID 可用</span>
+    <h1>用自己的 Apple ID，<br>生成一张真正的开发证书</h1>
+    <p class="lede">
+      共享证书签出来的 App 没有 <code>get-task-allow</code>，所以 StikDebug 看不到它。
+      这个工具在你的手机上直接向 Apple 申请一张属于你自己的开发证书，
+      导进全能签 / 轻松签之后，签出来的包就带上这个权限。
+    </p>
+  </header>
+
+  <div class="card">
+    <a class="btn" href="https://github.com/yzl5167/YZLSigner/releases/latest">下载 YZLSigner.ipa</a>
+    <a class="btn ghost" href="https://github.com/yzl5167/YZLSigner">查看源码</a>
+    <p class="sub">约 3 MB · 未签名，需要用任意自签工具装一次</p>
+  </div>
+
+  <div class="note">
+    <b>先看清楚这一步：</b>这个 App 本身也是一个 ipa，iOS 不允许未签名的 App 直接安装。
+    所以第一次要用你手头已有的自签工具（全能签、轻松签、AltStore、SideStore 都行）把它签一下装上。
+    装好之后，它就不再需要别的证书了。
+  </div>
+
+  <div class="card">
+    <h2>怎么用</h2>
+    <ol class="steps">
+      <li><b>读出本机 UDID</b>
+        <span class="hint">打开 App 会自动尝试读取。读不到就点「去 Safari 获取 UDID」，装一次描述文件就能拿到，回来粘贴。</span>
+      </li>
+      <li><b>填 Apple ID 和密码</b>
+        <span class="hint">直接和 Apple 的服务器通信，密码不会经过任何第三方。</span>
+      </li>
+      <li><b>输一次验证码</b>
+        <span class="hint">双重认证的 6 位码会推到你信任的设备上，两分钟内有效。</span>
+      </li>
+      <li><b>导出 p12 和描述文件，导进全能签</b>
+        <span class="hint">两个文件都在「文件 App → 我的 iPhone → YZL签名器」里，p12 密码是 yzl123。</span>
+      </li>
+      <li><b>用全能签签启动器，再安装</b>
+        <span class="hint">这次签出来的包带 get-task-allow，StikDebug 里就能看到并开启 JIT。</span>
+      </li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>为什么非要自己的证书</h2>
+    <table>
+      <tr>
+        <th>共享证书 / 企业证书</th>
+        <td class="no">没有 get-task-allow<br>调试类工具看不到</td>
+      </tr>
+      <tr>
+        <th>自己 Apple ID 的开发证书</th>
+        <td class="yes">带 get-task-allow<br>可被 JIT 工具识别</td>
+      </tr>
+      <tr>
+        <th>有效期</th>
+        <td>免费账号 7 天，到期重签</td>
+      </tr>
+      <tr>
+        <th>证书名额</th>
+        <td>免费账号 2 个，本工具会复用已保存的证书，不反复占用</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>常见问题</h2>
+    <details>
+      <summary>装好了，点图标没反应</summary>
+      <p>去「设置 → 隐私与安全性」，拉到底打开「开发者模式」，重启后确认。这个开关只有在装过一次开发签名的 App 之后才会出现。</p>
+    </details>
+    <details>
+      <summary>提示无法验证 App / 无法安装</summary>
+      <p>两种原因。一是描述文件里没有这台设备的 UDID，检查第一步有没有读对；二是免费账号的证书过期了，重新签一次即可。</p>
+    </details>
+    <details>
+      <summary>会不会用掉我的证书名额</summary>
+      <p>会占一个，这是 Apple 的规则。但证书会缓存在本机，重签同一个包时直接复用，不会每次都申请新的。想换一张可以在 App 里点「忘记本机证书」。</p>
+    </details>
+    <details>
+      <summary>7 天后怎么办</summary>
+      <p>重新打开 App 签一次。账号信息会记住，证书如果还在有效期内就直接复用，比第一次快很多。</p>
+    </details>
+    <details>
+      <summary>需要电脑吗</summary>
+      <p>不需要。整个流程都在手机上完成，包括向 Apple 申请证书、注册设备、生成描述文件和签名。</p>
+    </details>
+  </div>
+
+  <footer>
+    由 <a href="https://github.com/yzl5167">yzl5167</a> 构建 · 不收集任何账号信息
+  </footer>
+
+</div>
+</body>
+</html>
